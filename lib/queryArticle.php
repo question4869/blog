@@ -1,5 +1,5 @@
-<?php 
-    
+<?php
+
     class QueryArticle extends connect {
         private $article;
         const THUMBS_WIDTH = 200;
@@ -34,7 +34,7 @@
                     imagecopyresampled($canvas, $image, 0, 0, 0, 0, self::THUMBS_WIDTH, $thumbs_height, $width, $height);
                     imagejpeg($canvas, __DIR__.'/../album/thumbs-'.$new_name);
                     break;
-                    
+
                     case IMAGETYPE_GIF;
                     $new_name .= 'gif';
 
@@ -71,7 +71,6 @@
         }
         /*
         IDが存在する時は上書き処理
-        IDがなければ新規追加
         */
         public function save(){
             $title = $this->article->getTitle();
@@ -85,12 +84,12 @@
                 if ($file = $this->article->getFile()) {
 
                     //ファイルが既に存在する場合、古いファイルを削除
-                    if ($this -> article -> getFilename()) {
-                        unlink(__DIR__.'/../album/thumbs-'. $this->article->getFilename());
-                        unlink(__DIR__.'/../album/'. $this->article->getFilename());
+                    if ($this->article->getFilename()) {
+                        unlink(__DIR__.'/../album/thumbs-'.$this->article->getFilename());
+                        unlink(__DIR__.'/../album/'.$this->article->getFilename());
                     }
                     //新しいファイルをアップロード
-                    $this->article->setFilename($this->saveFile(['tmp_name']));
+                    $this->article->setFilename($this->saveFile($file['tmp_name']));
                     $filename = $this->article->getFilename();
                 }
 
@@ -101,7 +100,7 @@
                 $stmt->bindParam(':filename', $filename, PDO::PARAM_STR);
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
                 $stmt->execute();
-     
+
                 /**
                  * $is_upload = アップロード可否を決める変数
                  * $type = 画像の種類を取得する
@@ -111,18 +110,18 @@
             } else {
 
                   if ($file = $this->article->getFile()) {
-                      $this->article->setFilename( $this->saveFile($file['tmp_name']));
+                      $this->article->setFilename($this->saveFile($file['tmp_name']));
                       $filename = $this->article->getFilename();
                   }
                 }
-                
+
                 $stmt = $this->dbh->prepare("INSERT INTO articles (title, body, filename, created_at, updated_at) VALUES  (:title, :body, :filename, NOW(), NOW())");
                 $stmt->bindParam(':title', $title, PDO::PARAM_STR);
                 $stmt->bindParam(':body', $body, PDO::PARAM_STR);
                 $stmt->bindParam(':filename', $filename, PDO::PARAM_STR);
                 $stmt->execute();
                 }
-            
+
         public function find($id) {
             $stmt = $this->dbh->prepare("SELECT * FROM articles WHERE id=:id");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -164,3 +163,4 @@
             return $articles;
         }
     }
+?>

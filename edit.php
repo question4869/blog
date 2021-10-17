@@ -37,15 +37,15 @@
         $article->setBody($body);
         //画像がアップロードされていた時
         if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
-          $article -> setFile($_FILES['image']);
+          $article->setFile($_FILES['image']);
         }
         $article->save();
       }
       header('Location: backend.php');
       exit;
-    
+
     } else if (!empty($_POST)) {
-      
+
       if (!empty($_POST['id'])) {
         $id = $_POST['id'];
       }
@@ -121,7 +121,7 @@
 
         <?php if ($article->getFilename()) : ?>
           <div class="mb-3">
-            <img src="/album/thumbs-<?php echo $article->getFilename() ?> ">
+            <img src="./album/thumbs-<?php echo $article->getFilename() ?> ">
           </div>
           <?php endif ?>
 
